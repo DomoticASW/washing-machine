@@ -2,18 +2,19 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Union, Optional, List, Set, NewType
 
+from pydantic import BaseModel
+
 ActionId = NewType("ActionId", str)
 PropertyId = NewType("PropertyId", str)
 
-@dataclass(frozen=True)
-class Color:
+class Color(BaseModel):
     r: int
     g: int
     b: int
 
 ActualTypes = Union[str, int, float, bool, Color, None]
 
-class Type(Enum):
+class Type(str, Enum):
     STRING = "String"
     BOOLEAN = "Boolean"
     INT = "Int"
@@ -21,22 +22,18 @@ class Type(Enum):
     COLOR = "Color"
     VOID = "Void"
 
-@dataclass(frozen=True)
-class TypeConstraintEnum:
-    values: Set[str]
+class TypeConstraintEnum(BaseModel):
+    values: List[str]
 
-@dataclass(frozen=True)
-class TypeConstraintIntRange:
+class TypeConstraintIntRange(BaseModel):
     min: int
     max: int
 
-@dataclass(frozen=True)
-class TypeConstraintDoubleRange:
+class TypeConstraintDoubleRange(BaseModel):
     min: float
     max: float
 
-@dataclass(frozen=True)
-class TypeConstraintNone:
+class TypeConstraintNone(BaseModel):
     type: Type
 
 TypeConstraints = Union[
@@ -46,31 +43,26 @@ TypeConstraints = Union[
     TypeConstraintNone,
 ]
 
-@dataclass(frozen=True)
-class DeviceProperty:
+class DeviceProperty(BaseModel):
     id: PropertyId
     name: str
     value: ActualTypes
 
-@dataclass(frozen=True)
 class DevicePropertyWithSetter(DeviceProperty):
     setterActionId: ActionId
 
-@dataclass(frozen=True)
 class DevicePropertyWithTypeConstraint(DeviceProperty):
     typeConstraints: TypeConstraints
 
-@dataclass(frozen=True)
-class DeviceAction:
+class DeviceAction(BaseModel):
     id: ActionId
     name: str
     description: Optional[str]
     inputTypeConstraints: TypeConstraints
 
-@dataclass(frozen=True)
-class DeviceRegistration:
+class DeviceRegistration(BaseModel):
     id: str
     name: str
-    properties: List[DeviceProperty]
+    properties: List[DevicePropertyWithSetter | DevicePropertyWithTypeConstraint]
     actions: List[DeviceAction]
     events: List[str]
