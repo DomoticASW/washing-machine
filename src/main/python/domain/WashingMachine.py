@@ -9,13 +9,19 @@ class MachineState(Enum):
     COMPLETED = auto()
     ERROR = auto()
 
+class InvalidOperationError(Exception):
+    """Exception raised for invalid operations on the washing machine."""
+    pass
+
 class WashingProgram:
     def __init__(self, name, duration_sec):
         self.name = name
         self.duration_sec = duration_sec
 
 class WashingMachine:
-    def __init__(self):
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
         self.state = MachineState.IDLE
         self.current_program = None
         self.remaining_time = 0
@@ -25,7 +31,7 @@ class WashingMachine:
         self.programs = {
             "cotton": WashingProgram("Cotton", 30),
             "synthetics": WashingProgram("Synthetics", 20),
-            "quick": WashingProgram("Quick Wash", 10),
+            "quick": WashingProgram("Quick Wash", 10)
         }
 
     def restart_ws(self):
@@ -36,13 +42,12 @@ class WashingMachine:
                 self.remaining_time = 0
                 print("Washing machine is now OFF.")
             else:
-                print("Cannot power off during a cycle.")
+                raise InvalidOperationError("Cannot power off during a cycle.")
 
-    def start_program(self, program_name):
+    def start_program(self, program_name: str):
             if self.state != MachineState.IDLE:
-                print("Cannot start. Make sure the machine is ON and a program is selected.")
-                return
-            program = self.programs.get(program_name)
+                raise InvalidOperationError("Cannot start. Make sure the machine is ON and a program is selected.")
+            program = self.programs.get(program_name.lower())
             if program:
                 self.current_program = program
                 self.remaining_time = program.duration_sec
@@ -51,7 +56,7 @@ class WashingMachine:
                 self._thread.start()
                 print(f"Program '{program.name}' started.")
             else:
-                print(f"Program '{program_name}' not found.")
+                raise InvalidOperationError(f"Program '{program_name}' not found.")
 
     def start(self):
         with self._lock:
@@ -63,7 +68,7 @@ class WashingMachine:
                 self.state = MachineState.PAUSED
             print("Washing paused.")
         else:
-            print("Machine is not running.")
+            raise InvalidOperationError("Machine is not running.")
 
     def resume(self):
         if self.state == MachineState.PAUSED:
@@ -71,7 +76,7 @@ class WashingMachine:
                 self.state = MachineState.RUNNING
             print("Resuming wash.")
         else:
-            print("Machine is not paused.")
+            raise InvalidOperationError("Machine is not paused.")
 
     def status(self):
         return {
