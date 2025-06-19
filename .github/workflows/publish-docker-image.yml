@@ -6,6 +6,7 @@ on:
 jobs:
   publish-docker-image:
     runs-on: ubuntu-latest
+    environment: DockerHub Vars
     steps:
       - name: Checkout
         uses: actions/checkout@v4
