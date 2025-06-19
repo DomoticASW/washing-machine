@@ -1,22 +1,35 @@
 import threading
-from enum import Enum, auto
+from enum import Enum
 import time
+from pydantic import BaseModel
 
 class MachineState(Enum):
-    IDLE = auto()
-    RUNNING = auto()
-    PAUSED = auto()
-    COMPLETED = auto()
-    ERROR = auto()
+    IDLE = "Idle"
+    RUNNING = "Running"
+    PAUSED = "Paused"
+    COMPLETED = "Completed"
+    ERROR = "Error"
 
 class InvalidOperationError(Exception):
     """Exception raised for invalid operations on the washing machine."""
     pass
 
-class WashingProgram:
-    def __init__(self, name, duration_sec):
-        self.name = name
-        self.duration_sec = duration_sec
+class WashingProgram(BaseModel):
+    name: str
+    duration_sec: int
+
+    model_config = {
+        "frozen": True
+    }
+
+class WashingState(BaseModel):
+    state: MachineState
+    program: WashingProgram | None
+    remaining_time: int
+
+    model_config = {
+        "frozen": True
+    }
 
 class WashingMachine:
     def __init__(self, id, name):
@@ -29,9 +42,9 @@ class WashingMachine:
         self._lock = threading.Lock()
 
         self.programs = {
-            "cotton": WashingProgram("Cotton", 30),
-            "synthetics": WashingProgram("Synthetics", 20),
-            "quick": WashingProgram("Quick Wash", 10)
+            "cotton": WashingProgram(name="Cotton", duration_sec=30),
+            "synthetics": WashingProgram(name="Synthetics", duration_sec=20),
+            "quickwash": WashingProgram(name="Quick Wash", duration_sec=10)
         }
 
     def restart_ws(self):
@@ -47,7 +60,7 @@ class WashingMachine:
     def start_program(self, program_name: str):
             if self.state != MachineState.IDLE:
                 raise InvalidOperationError("Cannot start. Make sure the machine is ON and a program is selected.")
-            program = self.programs.get(program_name.lower())
+            program = self.programs.get(program_name.lower().replace(" ", ""))
             if program:
                 self.current_program = program
                 self.remaining_time = program.duration_sec
@@ -79,20 +92,20 @@ class WashingMachine:
             raise InvalidOperationError("Machine is not paused.")
 
     def status(self):
-        return {
-            "state": self.state.name,
-            "program": self.current_program.name if self.current_program else None,
-            "remaining_time": self.remaining_time
-        }
+        return WashingState(
+            state=self.state,
+            program=self.current_program,
+            remaining_time=self.remaining_time
+        )
     
     def _run_cycle(self):
         while self.remaining_time > 0:
             if self.state == MachineState.RUNNING:
-                print(f"Time remaining: {self.remaining_time:.0f}s")
                 self.remaining_time -= 1
                 time.sleep(1)
 
         with self._lock:         
             self.state = MachineState.COMPLETED
+            time.sleep(5)
             print(f"Program '{self.current_program.name}' completed.")
         self.restart_ws()  # Reset the machine after completion
