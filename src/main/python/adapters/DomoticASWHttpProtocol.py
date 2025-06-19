@@ -1,10 +1,9 @@
-from fastapi import Body, Depends, FastAPI, status
+from fastapi import Body, Depends, FastAPI, Request, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from typing import List
-
 from domain.WashingMachine import InvalidOperationError, WashingMachine
 from domoticASW.domoticASWProtocol import DeviceAction, DevicePropertyWithTypeConstraint, DeviceRegistration, Type, TypeConstraintEnum, TypeConstraintNone
+from domain import WashingMachineAgent
+from ports.ServerProtocol import ServerAddress
 
 def OkResponse(message: str) -> JSONResponse:
     return JSONResponse(
@@ -26,18 +25,19 @@ def NotFound(message: str) -> JSONResponse:
 
 # === ENDPOINTS ===
 
-def create_server(washing_machine: WashingMachine) -> FastAPI:
+def create_server(washing_machine_agent: WashingMachineAgent) -> FastAPI:
     app = FastAPI()
 
-    def get_washing_machine() -> WashingMachine:
-        return washing_machine
+    def get_washing_machine_agent() -> WashingMachineAgent:
+        return washing_machine_agent
     
     @app.get("/check-status")
-    def check_status(machine: WashingMachine = Depends(get_washing_machine)):
+    def check_status():
         return OkResponse(message="Washing machine is online")
 
     @app.post("/execute/{action}")
-    def execute_action(action: str, body: dict = Body(...), machine: WashingMachine = Depends(get_washing_machine)):
+    def execute_action(action: str, body: dict = Body(...), machine_agent: WashingMachineAgent = Depends(get_washing_machine_agent)):
+        machine = machine_agent.washing_machine
         try:
             match action:
                 case "start_program":
@@ -55,11 +55,15 @@ def create_server(washing_machine: WashingMachine) -> FastAPI:
         return OkResponse(message=f"Action '{action}' executed successfully")
 
     @app.post("/register")
-    def register_device(machine: WashingMachine = Depends(get_washing_machine)):
+    def register_device(request: Request, machine_agent: WashingMachineAgent = Depends(get_washing_machine_agent)):
+        client_host, client_port = request.client
+        machine_agent.set_server_address(ServerAddress(client_host, client_port))
+        print(f"SERVER: Machine agent start to run")
+        machine_agent.start()
         return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content=deviceRegistration(machine).model_dump()
-    )
+            status_code=status.HTTP_200_OK,
+            content=deviceRegistration(machine_agent.washing_machine).model_dump()
+        )
     
     return app
 
@@ -73,7 +77,7 @@ def deviceRegistration(washing_machine: WashingMachine) -> DeviceRegistration:
                 id="state",
                 name="State",
                 value=washing_machine.state.name,
-                typeConstraints=TypeConstraintEnum(values=["IDLE", "RUNNING", "PAUSED", "COMPLETED", "ERROR"])
+                typeConstraints=TypeConstraintEnum(values=["Idle", "Running", "Paused", "Completed", "Error"])
             ),
             DevicePropertyWithTypeConstraint(
                 id="program",
