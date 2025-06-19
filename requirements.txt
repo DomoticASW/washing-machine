@@ -1,0 +1,7 @@
+uvicorn
+dataclasses
+fastapi
+pydantic
+httpx
+asyncio
+typing-extensions
