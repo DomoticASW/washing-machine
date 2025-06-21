@@ -3,7 +3,7 @@ from enum import Enum
 import time
 from pydantic import BaseModel
 
-class MachineState(Enum):
+class MachineState(str, Enum):
     IDLE = "Idle"
     RUNNING = "Running"
     PAUSED = "Paused"

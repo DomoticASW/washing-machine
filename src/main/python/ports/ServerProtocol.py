@@ -14,5 +14,5 @@ class ServerCommunicationProtocol(ABC):
         pass
 
     @abstractmethod
-    async def update_state(self, server_address: ServerAddress, state: WashingState, washing_machine_id: str):
+    async def update_state(self, server_address: ServerAddress, property_name: str, property_value, washing_machine_id: str):
         pass

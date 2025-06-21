@@ -3,12 +3,13 @@ from enum import Enum
 from threading import Thread
 import threading
 import time
+from pydantic import BaseModel
 
 from domain.WashingMachine import MachineState, WashingMachine
 from adapters.ServerCommunicationProtocolHttpAdapter import ServerCommunicationProtocolHttpAdapter
 from ports.ServerProtocol import ServerAddress
 
-class Event(Enum):
+class Event(str, Enum):
     PAUSE = "pause"
     RESUME = "resume"
     COMPLETED = "completed"
@@ -36,8 +37,19 @@ class WashingMachineAgent(Thread):
       status = self.washing_machine.status()
       if self._has_meaningful_change(status.state):
         print(f"AGENT: EVENT!!: {status.state}, Program: {status.program.name if status.program else 'None'}, Remaining time: {status.remaining_time} seconds")
-        asyncio.run_coroutine_threadsafe(self.server.send_event(self._server_address, self._build_event(status.state), self.washing_machine.id), self.loop)
-      asyncio.run_coroutine_threadsafe(self.server.update_state(self._server_address, status, self.washing_machine.id), self.loop)
+        future = asyncio.run_coroutine_threadsafe(self.server.send_event(self._server_address, self._build_event(status.state), self.washing_machine.id), self.loop)
+        try: 
+          future.result()
+        except Exception as e:
+          print(f"AGENT ERROR! Errore nell'invio dell'evento' {e}")  # Only for debugging purposes
+      for property_name, property_value in status.model_dump().items():
+        if isinstance(property_value, BaseModel): # If the property is a BaseModel, we need to convert it to a dict
+          property_value = property_value.model_dump()
+        future = asyncio.run_coroutine_threadsafe(self.server.update_state(self._server_address, property_name, property_value, self.washing_machine.id), self.loop)
+        try: 
+          future.result()
+        except Exception as e:
+          print(f"AGENT ERROR! Errore nell'aggiornamento dello stato {e}")
       self._last_state = status.state
 
   def _has_meaningful_change(self, current_state: MachineState) -> bool:
