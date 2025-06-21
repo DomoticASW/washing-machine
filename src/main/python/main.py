@@ -1,3 +1,4 @@
+import os
 import uvicorn
 from domain.WashingMachine import WashingMachine
 from domain.WashingMachineAgent import WashingMachineAgent
@@ -5,6 +6,8 @@ from adapters.DomoticASWHttpProtocol import create_server
 from adapters.ServerCommunicationProtocolHttpAdapter import ServerCommunicationProtocolHttpAdapter
 
 if __name__ == "__main__":
+    device_server_port = os.getenv("DEVICE_SERVER_PORT", "8080")
+    server_port = os.getenv("SERVER_PORT")
     server = ServerCommunicationProtocolHttpAdapter()
     washing_machine = WashingMachine("WSH001", "Washing Machine 001")
     washing_machine_agent = WashingMachineAgent(
@@ -20,4 +23,9 @@ if __name__ == "__main__":
     # washing_machine.resume()
     # washing_machine._thread.join()
     app = create_server(washing_machine_agent)
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    if(server_port is not None):
+        washing_machine_agent.set_server_address(
+            ServerCommunicationProtocolHttpAdapter.ServerAddress("localhost", int(server_port))
+        )
+        washing_machine_agent.start()
+    uvicorn.run(app, host="0.0.0.0", port=int(device_server_port))
