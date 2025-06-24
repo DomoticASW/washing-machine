@@ -1,4 +1,3 @@
-# A Washing-machine emulato
 A washing machine simulated device in python for testing DomoticASW
 ---
 ## 🚀 Run with Docker
