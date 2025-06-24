@@ -1,7 +1,7 @@
 from fastapi import Body, Depends, FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from domain.WashingMachine import InvalidOperationError, WashingMachine
-from domoticASW.domoticASWProtocol import DeviceAction, DevicePropertyWithTypeConstraint, DeviceRegistration, Type, TypeConstraintEnum, TypeConstraintNone
+from domoticASW.domoticASWProtocol import ActionId, DeviceAction, DevicePropertyWithSetter, DevicePropertyWithTypeConstraint, DeviceRegistration, Type, TypeConstraintEnum, TypeConstraintNone
 from domain import WashingMachineAgent
 from ports.ServerProtocol import ServerAddress
 
@@ -80,11 +80,11 @@ def deviceRegistration(washing_machine: WashingMachine) -> DeviceRegistration:
                 value=washing_machine.state.name,
                 typeConstraints=TypeConstraintEnum(values=["Idle", "Running", "Paused", "Completed", "Error"])
             ),
-            DevicePropertyWithTypeConstraint(
+            DevicePropertyWithSetter(
                 id="program",
                 name="Program",
                 value="None",
-                typeConstraints=TypeConstraintEnum(values=["Cotton", "Synthetics", "Quick Wash"])
+                setterActionId=ActionId("start_program")
             ),
             DevicePropertyWithTypeConstraint(
                 id="remaining_time",

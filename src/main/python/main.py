@@ -7,8 +7,8 @@ from adapters.ServerCommunicationProtocolHttpAdapter import ServerCommunicationP
 from ports.ServerProtocol import ServerAddress
 
 if __name__ == "__main__":
-    device_server_port = os.getenv("DEVICE_SERVER_PORT", "8080")
-    server_port = os.getenv("SERVER_PORT")
+    device_server_port = os.getenv("PORT", "8080")
+    server_port = os.getenv("SERVER_PORT", None)
     server = ServerCommunicationProtocolHttpAdapter()
     washing_machine = WashingMachine("WSH001", "Washing Machine 001")
     washing_machine_agent = WashingMachineAgent(
@@ -24,7 +24,8 @@ if __name__ == "__main__":
     # washing_machine.resume()
     # washing_machine._thread.join()
     app = create_server(washing_machine_agent)
-    if(server_port is not None):
+    if(server_port is not None and server_port != ""):
+        print("Server: ", server_port)
         washing_machine_agent.set_server_address(
             ServerAddress("localhost", int(server_port))
         )
