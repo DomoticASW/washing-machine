@@ -60,7 +60,6 @@ def create_server(washing_machine_agent: WashingMachineAgent) -> FastAPI:
         server_port = body.get("server")
         machine_agent.set_server_address(ServerAddress(server_host, server_port))
         print(f"SERVER: Machine agent start to run")
-        machine_agent.start()
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content=deviceRegistration(machine_agent.washing_machine).model_dump()
