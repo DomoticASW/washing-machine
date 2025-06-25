@@ -22,18 +22,28 @@ class Type(str, Enum):
     COLOR = "Color"
     VOID = "Void"
 
+class ConstraintType(str, Enum):
+    ENUM = "Enum"
+    INT_RANGE = "IntRange"
+    DOUBLE_RANGE = "DoubleRange"
+    NONE = "None"
+
 class TypeConstraintEnum(BaseModel):
+    constraint: ConstraintType = ConstraintType.ENUM
     values: List[str]
 
 class TypeConstraintIntRange(BaseModel):
+    constraint: ConstraintType = ConstraintType.INT_RANGE
     min: int
     max: int
 
 class TypeConstraintDoubleRange(BaseModel):
+    constraint: ConstraintType = ConstraintType.DOUBLE_RANGE
     min: float
     max: float
 
 class TypeConstraintNone(BaseModel):
+    constraint: ConstraintType = ConstraintType.NONE
     type: Type
 
 TypeConstraints = Union[
