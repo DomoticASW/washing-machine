@@ -13,7 +13,9 @@ if __name__ == "__main__":
     server_broadcast_host = os.getenv("SERVER_DISCOVERY_ADDR", "255.255.255.255")
     server_broadcast_address = ServerAddress(server_broadcast_host, int(server_broadcast_port))
     server = ServerCommunicationProtocolHttpAdapter()
-    washing_machine = WashingMachine("WSH001", "Washing Machine 001")
+    ws_id = os.getenv("ID", "WSH001")
+    ws_name = os.getenv("NAME", "Washing Machine 001")
+    washing_machine = WashingMachine(ws_id, ws_name)
     washing_machine_agent = WashingMachineAgent(
         washing_machine=washing_machine,
         server=server,
