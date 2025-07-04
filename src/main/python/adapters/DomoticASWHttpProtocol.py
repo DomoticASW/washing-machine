@@ -76,7 +76,7 @@ def deviceRegistration(washing_machine: WashingMachine) -> DeviceRegistration:
             DevicePropertyWithTypeConstraint(
                 id="state",
                 name="State",
-                value=washing_machine.state.name,
+                value=washing_machine.state.value,
                 typeConstraints=TypeConstraintEnum(values=["Idle", "Running", "Paused", "Completed", "Error"])
             ),
             DevicePropertyWithSetter(
@@ -97,7 +97,7 @@ def deviceRegistration(washing_machine: WashingMachine) -> DeviceRegistration:
                 id="start_program",
                 name="Start Program",
                 description="Starts the selected washing program.",
-                inputTypeConstraints=TypeConstraintEnum(values=["Cotton", "Synthetics", "Quick Wash"])
+                inputTypeConstraints=TypeConstraintEnum(values=["Cotton", "Synthetics", "Quick Wash", "None"])
             ),
             DeviceAction(
                 id="pause",

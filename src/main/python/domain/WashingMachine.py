@@ -60,6 +60,8 @@ class WashingMachine:
     def start_program(self, program_name: str):
             if self.state != MachineState.IDLE:
                 raise InvalidOperationError("Cannot start. Make sure the machine is ON and a program is selected.")
+            if program_name == "None":
+                raise InvalidOperationError("No program selected. Please choose a valid program.")
             program = self.programs.get(program_name.lower().replace(" ", ""))
             if program:
                 self.current_program = program

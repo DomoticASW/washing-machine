@@ -7,7 +7,7 @@ from adapters.ServerCommunicationProtocolHttpAdapter import ServerCommunicationP
 from ports.ServerProtocol import ServerAddress
 
 if __name__ == "__main__":
-    device_server_port = os.getenv("PORT", "8080")
+    device_server_port = os.getenv("PORT", "8091")
     server_port = os.getenv("SERVER_PORT", None)
     server_broadcast_port = os.getenv("SERVER_DISCOVERY_PORT",  "30000")
     server_broadcast_host = os.getenv("SERVER_DISCOVERY_ADDR", "255.255.255.255")
