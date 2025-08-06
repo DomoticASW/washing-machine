@@ -14,13 +14,13 @@ def OkResponse(message: str) -> JSONResponse:
 def BadRequest(message: str) -> JSONResponse:
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
-        content={"message": message}
+        content={"cause": message}
     )
 
 def NotFound(message: str) -> JSONResponse:
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
-        content={"message": message}
+        content={"cause": message}
     )
 
 # === ENDPOINTS ===
