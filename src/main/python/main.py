@@ -7,7 +7,7 @@ from adapters.ServerCommunicationProtocolHttpAdapter import ServerCommunicationP
 from ports.ServerProtocol import ServerAddress
 
 if __name__ == "__main__":
-    device_server_port = os.getenv("PORT", "8080")
+    device_server_port = os.getenv("PORT", "8091")
     server_port = os.getenv("SERVER_PORT", None)
     server_broadcast_port = os.getenv("SERVER_DISCOVERY_PORT",  "30000")
     server_broadcast_host = os.getenv("SERVER_DISCOVERY_ADDR", "255.255.255.255")
@@ -23,13 +23,6 @@ if __name__ == "__main__":
         device_port=int(device_server_port),
         period_sec=1
     )
-    # Example usage
-    # washing_machine.start_program("quick")
-    # time.sleep(5) 
-    # washing_machine.pause()
-    # time.sleep(2)
-    # washing_machine.resume()
-    # washing_machine._thread.join()
     app = create_server(washing_machine_agent)
     if(server_port is not None and server_port != ""):
         print("Server: ", server_port)
