@@ -24,7 +24,7 @@ class WashingProgram(BaseModel):
 
 class WashingState(BaseModel):
     state: MachineState
-    program: WashingProgram | None
+    program: str | None
     remaining_time: int
 
     model_config = {
@@ -64,7 +64,7 @@ class WashingMachine:
                 raise InvalidOperationError("No program selected. Please choose a valid program.")
             program = self.programs.get(program_name.lower().replace(" ", ""))
             if program:
-                self.current_program = program
+                self.current_program = program.name
                 self.remaining_time = program.duration_sec
                 self.start()
                 self._thread = threading.Thread(target=self._run_cycle, daemon=True)
@@ -109,5 +109,5 @@ class WashingMachine:
         with self._lock:         
             self.state = MachineState.COMPLETED
             time.sleep(5)
-            print(f"Program '{self.current_program.name}' completed.")
+            print(f"Program '{self.current_program}' completed.")
         self.restart_ws()  # Reset the machine after completion
