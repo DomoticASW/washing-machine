@@ -39,7 +39,7 @@ class WashingMachineAgent(Thread):
       if self._server_address is not None:
         status = self.washing_machine.status()
         if self._has_meaningful_change(status.state):
-          print(f"AGENT: EVENT!!: {status.state}, Program: {status.program.name if status.program else 'None'}, Remaining time: {status.remaining_time} seconds")
+          print(f"AGENT: EVENT!!: {status.state}, Program: {status.program if status.program else 'None'}, Remaining time: {status.remaining_time} seconds")
           future = asyncio.run_coroutine_threadsafe(self.server.send_event(self._server_address, self._build_event(status.state), self.washing_machine.id), self.loop)
           try: 
             future.result()
