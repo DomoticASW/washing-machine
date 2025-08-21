@@ -25,9 +25,10 @@ if __name__ == "__main__":
     )
     app = create_server(washing_machine_agent)
     if(server_address is not None and server_address != ""):
+        host, port = server_address.split(":")
         print("Server: ", server_address)
         washing_machine_agent.set_server_address(
-            ServerAddress(server_address)
+            ServerAddress(host, port)
         )
     washing_machine_agent.start()
     uvicorn.run(app, host="0.0.0.0", port=int(device_server_port))
