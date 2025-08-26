@@ -19,10 +19,11 @@ class ServerCommunicationProtocolHttpAdapter(ServerCommunicationProtocol):
       await client.patch(f"http://{server_address.host}:{server_address.port}/api/devices/{washing_machine_id}/properties/{property_name}",
                               json={"value": property_value})
   
-  async def announce(self, discovery_broadcast_address: ServerProtocol.ServerAddress, device_port: int, washing_machine_id: str, washing_machine_name: str) -> None:
+  async def announce(self, discovery_broadcast_address: ServerProtocol.ServerAddress, device_port: int, washing_machine_id: str, washing_machine_name: str, lan_hostname: str) -> None:
     message = ServerProtocol.BroadcastMessage(
         id=washing_machine_id,
         name=washing_machine_name,
+        lanHostname = lan_hostname,
         port=device_port
     )
     broadcast_ip = discovery_broadcast_address.host

@@ -16,7 +16,7 @@ class Event(str, Enum):
 
 class WashingMachineAgent(Thread):
   _server_address: ServerAddress
-  def __init__(self, washing_machine: WashingMachine, server: ServerCommunicationProtocolHttpAdapter, server_broadcast_address: ServerAddress, device_port: int,period_sec=1):
+  def __init__(self, washing_machine: WashingMachine, server: ServerCommunicationProtocolHttpAdapter, server_broadcast_address: ServerAddress, device_port: int, lan_hostname: str, period_sec=1):
     super().__init__(daemon=True)
     self.loop = asyncio.new_event_loop()
     threading.Thread(target=self.loop.run_forever, daemon=True).start()
@@ -28,6 +28,7 @@ class WashingMachineAgent(Thread):
     self.device_port = device_port
     self.period_sec = period_sec
     self._last_state = None
+    self.lan_hostname = lan_hostname
 
   def stop(self):
     self._stop = True
@@ -57,7 +58,7 @@ class WashingMachineAgent(Thread):
       else:
         print(f"AGENT: Sending broadcast announcement")
         asyncio.run_coroutine_threadsafe(
-              self.server.announce(self.server_broadcast_address, self.device_port, self.washing_machine.id, self.washing_machine.name), 
+              self.server.announce(self.server_broadcast_address, self.device_port, self.washing_machine.id, self.washing_machine.name, self.lan_hostname), 
               self.loop
           )
 

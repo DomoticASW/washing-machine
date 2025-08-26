@@ -10,6 +10,7 @@ class ServerAddress():
 class BroadcastMessage():
     id: str
     name: str
+    lanHostname: str
     port: int
 
 class ServerCommunicationProtocol(ABC):

@@ -11,6 +11,7 @@ if __name__ == "__main__":
     server_address = os.getenv("SERVER_ADDRESS", None)
     server_broadcast_port = os.getenv("SERVER_DISCOVERY_PORT",  "30000")
     server_broadcast_host = os.getenv("SERVER_DISCOVERY_ADDR", "255.255.255.255")
+    lan_hostname = os.getenv("LAN_HOSTNAME", "localhost")
     server_broadcast_address = ServerAddress(server_broadcast_host, int(server_broadcast_port))
     server = ServerCommunicationProtocolHttpAdapter()
     ws_id = os.getenv("ID", "WSH001")
@@ -21,6 +22,7 @@ if __name__ == "__main__":
         server=server,
         server_broadcast_address=server_broadcast_address,
         device_port=int(device_server_port),
+        lan_hostname=lan_hostname,
         period_sec=1
     )
     app = create_server(washing_machine_agent)
