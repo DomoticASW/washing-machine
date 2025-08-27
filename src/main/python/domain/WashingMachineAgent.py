@@ -84,3 +84,7 @@ class WashingMachineAgent(Thread):
   def set_server_address(self, server_address: ServerAddress):
     print(f"AGENT: Device registered with address: {server_address.host}:{server_address.port}")
     self._server_address = server_address
+
+  def remove_server_address(self):
+    print(f"AGENT: Device unregistered from server")
+    self._server_address = None

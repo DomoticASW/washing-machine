@@ -1,4 +1,5 @@
 import os
+import socket
 import uvicorn
 from domain.WashingMachine import WashingMachine
 from domain.WashingMachineAgent import WashingMachineAgent
@@ -11,7 +12,7 @@ if __name__ == "__main__":
     server_address = os.getenv("SERVER_ADDRESS", None)
     server_broadcast_port = os.getenv("SERVER_DISCOVERY_PORT",  "30000")
     server_broadcast_host = os.getenv("SERVER_DISCOVERY_ADDR", "255.255.255.255")
-    lan_hostname = os.getenv("LAN_HOSTNAME", "localhost")
+    lan_hostname = os.getenv("LAN_HOSTNAME", "0.0.0.0")
     server_broadcast_address = ServerAddress(server_broadcast_host, int(server_broadcast_port))
     server = ServerCommunicationProtocolHttpAdapter()
     ws_id = os.getenv("ID", "WSH001")
@@ -33,4 +34,4 @@ if __name__ == "__main__":
             ServerAddress(host, port)
         )
     washing_machine_agent.start()
-    uvicorn.run(app, host="0.0.0.0", port=int(device_server_port))
+    uvicorn.run(app, host=lan_hostname, port=int(device_server_port))

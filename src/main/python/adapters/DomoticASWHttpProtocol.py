@@ -65,6 +65,11 @@ def create_server(washing_machine_agent: WashingMachineAgent) -> FastAPI:
             content=deviceRegistration(machine_agent.washing_machine).model_dump()
         )
     
+    @app.post("/unregister")
+    def unregister_device(machine_agent: WashingMachineAgent = Depends(get_washing_machine_agent)):
+        machine_agent.remove_server_address()
+        return OkResponse(message="Device unregistered successfully")
+    
     return app
 
 
