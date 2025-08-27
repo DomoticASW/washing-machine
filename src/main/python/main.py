@@ -34,4 +34,4 @@ if __name__ == "__main__":
             ServerAddress(host, port)
         )
     washing_machine_agent.start()
-    uvicorn.run(app, host=lan_hostname, port=int(device_server_port))
+    uvicorn.run(app, host="0.0.0.0", port=int(device_server_port))
