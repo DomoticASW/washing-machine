@@ -12,7 +12,7 @@ from ports.ServerProtocol import ServerAddress
 class Event(str, Enum):
     PAUSE = "pause"
     RESUME = "resume"
-    COMPLETED = "completed"
+    COMPLETED = "program_completed"
 
 class WashingMachineAgent(Thread):
   _server_address: ServerAddress

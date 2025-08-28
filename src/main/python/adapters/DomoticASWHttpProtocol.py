@@ -123,5 +123,5 @@ def deviceRegistration(washing_machine: WashingMachine) -> DeviceRegistration:
                 inputTypeConstraints=TypeConstraintNone(type=Type.VOID)
             )
         ],
-        events=["start", "stop", "program_completed"]
+        events=["pause", "resume", "program_completed"]
     )
