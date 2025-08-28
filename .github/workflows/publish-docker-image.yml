@@ -26,4 +26,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/domoticasw-washing-machine:latest
+          tags: |
+            ${{ vars.DOCKERHUB_USERNAME }}/domoticasw-washing-machine:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/domoticasw-washing-machine:${{ github.event.release.tag_name }}
