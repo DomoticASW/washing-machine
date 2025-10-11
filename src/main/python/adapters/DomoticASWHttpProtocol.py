@@ -56,7 +56,7 @@ def create_server(washing_machine_agent: WashingMachineAgent) -> FastAPI:
 
     @app.post("/register")
     def register_device(request: Request, body: dict = Body(...),machine_agent: WashingMachineAgent = Depends(get_washing_machine_agent)):
-        server_host = request.client.host
+        server_host = body.get("serverHost")
         server_port = body.get("serverPort")
         machine_agent.set_server_address(ServerAddress(server_host, server_port))
         print(f"SERVER: Machine agent start to run: ", server_host, " and port: ", server_port)
